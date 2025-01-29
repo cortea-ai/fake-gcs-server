@@ -131,15 +131,6 @@ func Load(args []string) (Config, error) {
 		cfg.event.list = strings.Split(eventList, ",")
 	}
 
-	if cfg.externalURL == "" {
-		if cfg.Scheme != "both" {
-			cfg.externalURL = fmt.Sprintf("%s://%s:%d", cfg.Scheme, cfg.Host, cfg.Port)
-		} else {
-			// for scheme 'both' taking externalURL as HTTPs by default
-			cfg.externalURL = fmt.Sprintf("%s://%s:%d", schemeHTTPS, cfg.Host, cfg.Port)
-		}
-	}
-
 	return cfg, cfg.validate()
 }
 

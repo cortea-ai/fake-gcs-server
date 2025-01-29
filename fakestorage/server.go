@@ -464,14 +464,17 @@ func (s *Server) Stop() {
 }
 
 // URL returns the server URL.
-func (s *Server) URL() string {
-	if s.externalURL != "" {
+func (s *Server) URL(remoteAddr string) string {
+	ip := strings.Split(remoteAddr, ":")[0]
+	octets := strings.Split(ip, ".") // IPv6 is not supported
+	isGateway := len(octets) == 4 && octets[len(octets)-1] == "1" && octets[0] != "127"
+
+	// Only use external URL if the request is coming from a different network
+	if s.externalURL != "" && isGateway {
 		return s.externalURL
 	}
-	if s.ts != nil {
-		return s.ts.URL
-	}
-	return ""
+
+	return fmt.Sprintf("%s://%s:%d", s.options.Scheme, s.options.Host, s.options.Port)
 }
 
 // PublicURL returns the server's public download URL.
